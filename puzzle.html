@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cars Academy｜Puzzle Mode（パズルモード）</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            flex-direction: column;
+            align-items: center;
+            background-image: url(./img/wallpaper4.jpg);
+            background-size: cover;
+            background-color: rgba(255, 255, 255, 0);
+            background-blend-mode: lighten;
+            overflow: hidden;
+            min-height: 100vh;
+            margin: 0;
+            position: relative;
+        }
+
+        #particles-js {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        #canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .back-to-top {
+            position: fixed;
+            top: 20px;
+            right: 30px;
+            text-decoration: none;
+            color: whitesmoke;
+            font-size: 20px;
+            z-index: 4;
+            transition: transform 0.3s, color 0.3s;
+        }
+
+        .back-to-top:hover {
+            color: #ffcc00;
+            transform: rotate(360deg);
+        }
+
+        .footer {
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            text-align: center;
+            padding: 10px;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            font-family: Arial, sans-serif;
+            z-index: 4;
+        }
+
+        .footer p {
+            font-size: 10px;
+        }
+
+        .title {
+            display: flex;
+            align-items: center;
+            color: whitesmoke;
+            z-index: 4;
+        }
+
+        .title img {
+            width: 40px;
+            height: 40px;
+            margin-right: 10px;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 24px;
+            z-index: 5;
+            animation: pulse 2s infinite ease-in-out;
+            pointer-events: auto;
+        }
+
+        .container {
+            width: 50%;
+            max-width: 90vw;
+            background-color: whitesmoke;
+            padding: 2em 1em;
+            border-radius: 0.8em;
+            margin: 2em auto;
+            text-align: center;
+            z-index: 3;
+            display: none;
+        }
+
+        .draggable-objects,
+        .drop-points {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1em;
+            z-index: 3;
+        }
+
+        .drop-points {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            gap: 1em;
+            padding: 1em;
+        }
+
+        .draggable-image {
+            width: 6em;
+            height: 6em;
+            cursor: move;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            z-index: 4;
+        }
+
+        .draggable-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        img {
+            width: 100%;
+            max-width: 100%;
+            height: auto;
+            filter: drop-shadow(0 0.3em 0.9em rgba(0, 0, 0, 0.25));
+        }
+
+        .countries {
+            width: 8em;
+            height: 6em;
+            display: grid;
+            place-items: center;
+            border: 0.25em dashed #010c39;
+            border-radius: 0.8em;
+            margin-bottom: 1em;
+            z-index: 3;
+        }
+
+        .dropped {
+            padding: 0;
+            background-color: #e5ffc8;
+        }
+
+        .controls-container {
+            display: flex;
+            justify-content: center;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 1em;
+        }
+
+        .controls-container p {
+            color: #ffffff;
+            font-size: 1.2em;
+            margin-bottom: 0.5em;
+        }
+
+        .hide {
+            display: none;
+        }
+
+        .reset-button {
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #ff4500;
+            color: whitesmoke;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+            z-index: 4;
+        }
+
+        .reset-button:hover {
+            background-color: #ffcc00;
+        }
+
+        .scoreboard {
+            color: whitesmoke;
+            font-size: 1.2em;
+            margin-top: 1em;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .counter {
+            color: red;
+            font-size: 1.2em;
+            margin-top: 1em;
+            text-align: center;
+        }
+
+        .next-game-container {
+            display: none;
+            justify-content: center;
+            align-items: center;
+            margin-top: 1em;
+        }
+
+        .ranking-link {
+            color: #ffcc00;
+            text-decoration: none;
+            font-size: 1.2em;
+            margin-top: 1em;
+            font-weight: bold;
+        }
+
+        .ranking-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="particles-js"></div>
+    <canvas id="canvas"></canvas>
+
+    <a href="./top.html" class="back-to-top" id="back-to-top">
+        <i class="fas fa-arrow-circle-up"></i> Back To Top
+    </a>
+
+    <div class="title" id="puzzle-mode">
+        <img src="./img/puzzle-icon.jpg" alt="Puzzle Mode">
+        <h1>パズルモード</h1>
+    </div>
+
+    <a href="./ranking.html" target="_blank" class="ranking-link">ランキングを見る</a>
+
+    <div class="scoreboard hide" id="scoreboard">
+        <h2>Scoreboard</h2>
+        <ul id="score-list"></ul>
+        <button id="try-again" class="reset-button hide">Try Again</button>
+    </div>
+
+    <div class="counter hide" id="game-counter">
+        <p>Game 1/5</p>
+    </div>
+
+    <div class="next-game-container" id="next-game-container">
+        <button id="next-game" class="reset-button hide">Next Game</button>
+    </div>
+
+    <div class="controls-container">
+        <input type="text" id="username" placeholder="Enter your name...">
+        <p id="result"></p>
+        <button id="start" class="reset-button">Start Game</button>
+    </div>
+
+    <div class="container" id="game-container">
+        <div class="draggable-objects"></div>
+        <div class="drop-points"></div>
+    </div>
+
+    <div class="footer">
+        <p>©Disney/Pixar「カーズ／Cars」は米国ウォルト・ディズニー・カンパニー（The Walt Disney Company）の登録商標です。</p>
+        <p>©︎タカラトミー 「トミカ」は株式会社タカラトミーの登録商標です。</p>
+        <p>本アプリは、文化庁「改正著作権法第35条運用指針」に準拠し、非営利目的で設置された教育機関で行われる授業において、
+            その授業の過程で必要と認められる限度において利用に供することを目的として開発されました。</p>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js" defer></script>
+    <script src="https://code.createjs.com/1.0.0/createjs.min.js" defer></script>
+    <script type="module">
+        document.addEventListener('DOMContentLoaded', () => {
+            particlesJS("particles-js", {
+                "particles": {
+                    "number": {
+                        "value": 100,
+                        "density": {
+                            "enable": true,
+                            "value_area": 800
+                        }
+                    },
+                    "color": {
+                        "value": "#ff4500"
+                    },
+                    "shape": {
+                        "type": "circle",
+                        "stroke": {
+                            "width": 0,
+                            "color": "#ff4500"
+                        },
+                        "polygon": {
+                            "nb_sides": 5
+                        }
+                    },
+                    "opacity": {
+                        "value": 0.5,
+                        "random": false,
+                        "anim": {
+                            "enable": false,
+                            "speed": 1,
+                            "opacity_min": 0.1,
+                            "sync": false
+                        }
+                    },
+                    "size": {
+                        "value": 5,
+                        "random": true,
+                        "anim": {
+                            "enable": true,
+                            "speed": 3,
+                            "size_min": 0.1,
+                            "sync": false
+                        }
+                    },
+                    "line_linked": {
+                        "enable": false,
+                    },
+                    "move": {
+                        "enable": true,
+                        "speed": 5,
+                        "direction": "top-right",
+                        "random": false,
+                        "straight": false,
+                        "out_mode": "out",
+                        "bounce": false,
+                        "attract": {
+                            "enable": false,
+                            "rotateX": 600,
+                            "rotateY": 1200
+                        }
+                    }
+                },
+                "interactivity": {
+                    "detect_on": "canvas",
+                    "events": {
+                        "onhover": {
+                            "enable": false,
+                        },
+                        "onclick": {
+                            "enable": false,
+                        },
+                        "resize": true
+                    },
+                },
+                "retina_detect": true
+            });
+        });
+
+        // Firebaseの設定
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyB-J6Bjoju4NeRAz6QtMP-9CWRTMZcSJUg",
+            authDomain: "cars-academy.firebaseapp.com",
+            projectId: "cars-academy",
+            storageBucket: "cars-academy.appspot.com",
+            messagingSenderId: "715129685567",
+            appId: "1:715129685567:web:3efdbddbf3533fbdba1a8a"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // スコアの保存関数
+        const saveTotalScore = async (userId, totalTime, totalMistakes) => {
+            try {
+                await addDoc(collection(db, 'scores'), {
+                    userId: userId,
+                    totalTime: totalTime,
+                    totalMistakes: totalMistakes,
+                    timestamp: serverTimestamp()
+                });
+                console.log('Total score saved successfully');
+            } catch (error) {
+                console.error('Error saving total score: ', error);
+            }
+        };
+
+        let draggableObjects;
+        let dropPoints;
+        const startButton = document.getElementById("start");
+        const tryAgainButton = document.getElementById("try-again");
+        const nextGameButton = document.getElementById("next-game");
+        const nextGameContainer = document.getElementById("next-game-container");
+        const result = document.getElementById("result");
+        const controls = document.querySelector(".controls-container");
+        const dragContainer = document.querySelector(".draggable-objects");
+        const dropContainer = document.querySelector(".drop-points");
+        const gameContainer = document.getElementById("game-container");
+        const scoreboard = document.getElementById("scoreboard");
+        const scoreList = document.getElementById("score-list");
+        const gameCounter = document.getElementById("game-counter");
+        const usernameInput = document.getElementById("username");
+        const data = [
+            "Arvy Motorhome", "Brick Yardley", "Chick Hicks", "Doc Hudson", "Elvis", "Finn McMissile", "Guido", "Holley Shiftwell",
+            "Ivan Mater", "Jackson Storm", "King", "Luigi", "Mater", "Natalie Certain", "Okuni", "Piston Cup", "Queen", "Red", "Sheriff",
+            "Tractor", "Uncle Topolino", "V8 Cafe", "Wingo", "aXlerod", "Yeti", "Zundapp"
+        ];
+
+        let deviceType = "";
+        let initialX = 0,
+            initialY = 0;
+        let currentElement = "";
+        let moveElement = false;
+        let gameCount = 0;
+        let totalTime = 0;
+        let totalMistakes = 0;
+        let gameStartTime;
+        let userId = "";
+
+        // タッチデバイスを検出する
+        const isTouchDevice = () => {
+            try {
+                document.createEvent("TouchEvent");
+                deviceType = "touch";
+                return true;
+            } catch (e) {
+                deviceType = "mouse";
+                return false;
+            }
+        };
+
+        let count = 0;
+        let mistakes = 0;
+
+        // 配列からランダムな値を取得
+        const randomValueGenerator = () => {
+            return data[Math.floor(Math.random() * data.length)];
+        };
+
+        // ゲーム終了時の表示
+        const stopGame = () => {
+            const gameEndTime = Date.now();
+            const gameTime = (gameEndTime - gameStartTime) / 1000;
+            totalTime += gameTime;
+            totalMistakes += mistakes;
+            gameCount += 1;
+
+            if (gameCount < 5) {
+                nextGameButton.classList.remove("hide");
+                nextGameContainer.style.display = "flex";
+            } else {
+                showFinalScore();
+            }
+        };
+
+        // 最終スコアの表示
+        const showFinalScore = () => {
+            controls.classList.add("hide");
+            gameContainer.classList.add("hide");
+            gameCounter.classList.add("hide");
+            nextGameContainer.style.display = "none";
+            scoreboard.classList.remove("hide");
+
+            const finalScoreItem = document.createElement("li");
+            finalScoreItem.innerText = `Total Time: ${totalTime.toFixed(2)}s, Total Mistakes: ${totalMistakes}`;
+            scoreList.appendChild(finalScoreItem);
+
+            // 最終スコアをFirestoreに保存
+            saveTotalScore(userId, totalTime, totalMistakes);
+
+            tryAgainButton.classList.remove("hide");
+            startButton.classList.add("hide");
+        };
+
+        // サウンドを再生する
+        const playSound = (sound) => {
+            const audio = new Audio(sound);
+            audio.play();
+        };
+
+        // ドラッグ＆ドロップの機能
+        function dragStart(e) {
+            if (isTouchDevice()) {
+                initialX = e.touches[0].clientX;
+                initialY = e.touches[0].clientY;
+                moveElement = true;
+                currentElement = e.target;
+            } else {
+                e.dataTransfer.setData("text", e.target.id);
+            }
+        }
+
+        function dragOver(e) {
+            e.preventDefault();
+        }
+
+        const touchMove = (e) => {
+            if (moveElement) {
+                e.preventDefault();
+                let newX = e.touches[0].clientX;
+                let newY = e.touches[0].clientY;
+                let currentSelectedElement = document.getElementById(e.target.id);
+                currentSelectedElement.parentElement.style.top =
+                    currentSelectedElement.parentElement.offsetTop - (initialY - newY) + "px";
+                currentSelectedElement.parentElement.style.left =
+                    currentSelectedElement.parentElement.offsetLeft - (initialX - newX) + "px";
+                initialX = newX;
+                initialY = newY;
+            }
+        };
+
+        const drop = (e) => {
+            e.preventDefault();
+            let success = false;
+            if (isTouchDevice()) {
+                moveElement = false;
+                const currentDrop = document.querySelector(`div[data-id='${e.target.id}']`);
+                const currentDropBound = currentDrop.getBoundingClientRect();
+                if (
+                    initialX >= currentDropBound.left &&
+                    initialX <= currentDropBound.right &&
+                    initialY >= currentDropBound.top &&
+                    initialY <= currentDropBound.bottom
+                ) {
+                    currentDrop.classList.add("dropped");
+                    currentElement.classList.add("hide");
+                    currentDrop.innerHTML = ``;
+                    currentDrop.insertAdjacentHTML(
+                        "afterbegin",
+                        `<img src= "./img2/${currentElement.id}.png">`
+                    );
+                    count += 1;
+                    success = true;
+                }
+            } else {
+                const draggedElementData = e.dataTransfer.getData("text");
+                const droppableElementData = e.target.getAttribute("data-id");
+                if (draggedElementData === droppableElementData) {
+                    const draggedElement = document.getElementById(draggedElementData);
+                    e.target.classList.add("dropped");
+                    draggedElement.classList.add("hide");
+                    draggedElement.setAttribute("draggable", "false");
+                    e.target.innerHTML = ``;
+                    e.target.insertAdjacentHTML(
+                        "afterbegin",
+                        `<img src="./img2/${draggedElementData}.png">`
+                    );
+                    count += 1;
+                    success = true;
+                }
+            }
+            if (success) {
+                playSound('./sounds/true.mp3');
+            } else {
+                playSound('./sounds/false.mp3');
+                mistakes += 1;
+            }
+            if (count == 3) {
+                stopGame();
+            }
+        };
+
+        const creator = () => {
+            dragContainer.innerHTML = "";
+            dropContainer.innerHTML = "";
+            let randomData = [];
+            for (let i = 1; i <= 3; i++) {
+                let randomValue = randomValueGenerator();
+                if (!randomData.includes(randomValue)) {
+                    randomData.push(randomValue);
+                } else {
+                    i -= 1;
+                }
+            }
+            for (let i of randomData) {
+                const flagDiv = document.createElement("div");
+                flagDiv.classList.add("draggable-image");
+                flagDiv.setAttribute("draggable", true);
+                if (isTouchDevice()) {
+                    flagDiv.style.position = "absolute";
+                }
+                flagDiv.innerHTML = `<img src="./img2/${i}.png" id="${i}">`;
+                dragContainer.appendChild(flagDiv);
+
+                flagDiv.addEventListener("mouseover", () => playSound('./sounds/select.mp3'));
+            }
+            randomData = randomData.sort(() => 0.5 - Math.random());
+            for (let i of randomData) {
+                const countryDiv = document.createElement("div");
+                countryDiv.innerHTML = `<div class='countries' data-id='${i}'>
+${i.charAt(0).toUpperCase() + i.slice(1).replace("-", " ")}
+</div>
+`;
+                dropContainer.appendChild(countryDiv);
+            }
+        };
+
+        const startGame = async () => {
+            userId = usernameInput.value.trim();
+            if (userId === "") {
+                alert("Please enter your name.");
+                return;
+            }
+
+            if (gameCount === 0) {
+                scoreList.innerHTML = "";
+                gameCounter.classList.remove("hide");
+            }
+            currentElement = "";
+            controls.classList.add("hide");
+            startButton.classList.add("hide");
+            tryAgainButton.classList.add("hide");
+            nextGameButton.classList.add("hide");
+            nextGameContainer.style.display = "none";
+            gameContainer.style.display = "block";
+            scoreboard.classList.add("hide");
+            gameCounter.innerText = `Game ${gameCount + 1}/5`;
+            await creator();
+            count = 0;
+            mistakes = 0;
+            gameStartTime = Date.now();
+            dropPoints = document.querySelectorAll(".countries");
+            draggableObjects = document.querySelectorAll(".draggable-image");
+
+            draggableObjects.forEach((element) => {
+                element.addEventListener("dragstart", dragStart);
+                element.addEventListener("touchstart", dragStart);
+                element.addEventListener("touchend", drop);
+                element.addEventListener("touchmove", touchMove);
+            });
+            dropPoints.forEach((element) => {
+                element.addEventListener("dragover", dragOver);
+                element.addEventListener("drop", drop);
+            });
+        };
+
+        startButton.addEventListener("click", startGame);
+        tryAgainButton.addEventListener("click", () => {
+            gameCount = 0;
+            totalTime = 0;
+            totalMistakes = 0;
+            startGame();
+        });
+        nextGameButton.addEventListener("click", () => {
+            nextGameButton.classList.add("hide");
+            nextGameContainer.style.display = "none";
+            startGame();
+        });
+
+        const backToTop = document.getElementById("back-to-top");
+        backToTop.addEventListener('mouseover', () => playSound('./sounds/select.mp3'));
+        backToTop.addEventListener('click', (event) => {
+            event.preventDefault();
+            playSound('./sounds/start.mp3');
+            setTimeout(() => {
+                window.location.href = backToTop.href;
+            }, 5000);
+        });
+    </script>
+</body>
+
+</html>

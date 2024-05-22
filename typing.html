@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cars Academy｜Typing Mode（タイピングモード）</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            background-image: url(./img/wallpaper3.jpg);
+            background-size: cover;
+            background-color: rgba(255, 255, 255, 0.3);
+            background-blend-mode: lighten;
+            position: relative;
+        }
+
+        #particles-js {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .content {
+            position: relative;
+            z-index: 2;
+            padding: 20px;
+        }
+
+        .title {
+            display: flex;
+            align-items: center;
+            color: whitesmoke;
+            margin: 20px 0;
+            justify-content: center;
+        }
+
+        .title img {
+            width: 40px;
+            height: 40px;
+            margin-right: 10px;
+        }
+
+        .input-container {
+            text-align: center;
+            margin: 60px 0;
+        }
+
+        #txt {
+            width: 80%;
+            max-width: 400px;
+            height: 40px;
+            font-size: 35px;
+            border-top: none;
+            border-left: none;
+            border-right: none;
+            border-bottom: 3px whitesmoke solid;
+            padding: 5px;
+            text-align: center;
+        }
+
+        .img-container {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .img {
+            width: 100%;
+            max-width: 300px;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+        }
+
+        #result {
+            font-size: 35px;
+            text-align: center;
+            color: whitesmoke;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        @media (min-width: 600px) {
+            #result {
+                font-size: 55px;
+            }
+        }
+
+        .back-to-top {
+            position: fixed;
+            top: 20px;
+            right: 30px;
+            text-decoration: none;
+            color: whitesmoke;
+            font-size: 20px;
+            z-index: 4;
+            transition: transform 0.3s, color 0.3s;
+        }
+
+        .back-to-top:hover {
+            color: #ffcc00;
+            transform: rotate(360deg);
+        }
+
+        .footer {
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            text-align: center;
+            padding: 10px;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            font-family: Arial, sans-serif;
+            z-index: 4;
+        }
+
+        .footer p {
+            font-size: 10px;
+            margin: 5px 0;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 24px;
+            z-index: 1000;
+            animation: pulse 2s infinite ease-in-out;
+            pointer-events: auto;
+            text-align: center;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.1);
+            }
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <div id="particles-js"></div>
+
+    <a href="./top.html" class="back-to-top" id="back-to-top">
+        <i class="fas fa-arrow-circle-up"></i> Back To Top
+    </a>
+
+    <div class="content">
+        <div class="title" id="typing-mode">
+            <img src="./img/typing-icon.png" alt="Typing Mode">
+            <h1>タイピングモード</h1>
+        </div>
+
+        <div class="input-container">
+            <input type="text" id="txt" inputmode="latin" placeholder="Type Here...">
+        </div>
+
+        <div id="result"></div>
+
+        <div class="img-container" id="img">
+            <img src="./img/_welcomeSign.png" class="img" alt="Welcome Sign">
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>©Disney/Pixar「カーズ／Cars」は米国ウォルト・ディズニー・カンパニー（The Walt Disney Company）の登録商標です。</p>
+        <p>©︎タカラトミー 「トミカ」は株式会社タカラトミーの登録商標です。</p>
+        <p>本アプリは、文化庁「改正著作権法第35条運用指針」に準拠し、非営利目的で設置された教育機関で行われる授業において、
+            その授業の過程で必要と認められる限度において利用に供することを目的として開発されました。</p>
+    </div>
+
+    <div class="overlay" id="overlay">
+        Click to start（ゲームを始める）
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js"></script>
+    <script src="https://code.createjs.com/1.0.0/createjs.min.js"></script>
+
+    <script>
+        // Particles.jsの設定
+        particlesJS("particles-js", {
+            "particles": {
+                "number": {
+                    "value": 100,
+                    "density": {
+                        "enable": true,
+                        "value_area": 800
+                    }
+                },
+                "color": {
+                    "value": "#ff4500"
+                },
+                "shape": {
+                    "type": "circle",
+                    "stroke": {
+                        "width": 0,
+                        "color": "#ff4500"
+                    },
+                    "polygon": {
+                        "nb_sides": 5
+                    }
+                },
+                "opacity": {
+                    "value": 0.5,
+                    "random": false,
+                    "anim": {
+                        "enable": false,
+                        "speed": 1,
+                        "opacity_min": 0.1,
+                        "sync": false
+                    }
+                },
+                "size": {
+                    "value": 5,
+                    "random": true,
+                    "anim": {
+                        "enable": true,
+                        "speed": 3,
+                        "size_min": 0.1,
+                        "sync": false
+                    }
+                },
+                "line_linked": {
+                    "enable": false,
+                },
+                "move": {
+                    "enable": true,
+                    "speed": 5,
+                    "direction": "top-right",
+                    "random": false,
+                    "straight": false,
+                    "out_mode": "out",
+                    "bounce": false,
+                    "attract": {
+                        "enable": false,
+                        "rotateX": 600,
+                        "rotateY": 1200
+                    }
+                }
+            },
+            "interactivity": {
+                "detect_on": "canvas",
+                "events": {
+                    "onhover": {
+                        "enable": false,
+                    },
+                    "onclick": {
+                        "enable": false,
+                    },
+                    "resize": true
+                },
+            },
+            "retina_detect": true
+        });
+
+        let clearTimer;
+        const typeSound = new Audio('./sounds/type.mp3'); // タイプ音のオーディオファイルをロード
+
+        function result() {
+            let inputField = document.getElementById('txt');
+            let text = inputField.value.toUpperCase();
+            inputField.value = text; // 入力フィールドの内容を大文字に変換して反映
+            let result = document.getElementById('result');
+            let image = document.getElementById('img').getElementsByTagName('img')[0];
+            const images = [
+                "./img/A as in Arvy Motorhome.png",
+                "./img/B as in Brick Yardley.png",
+                "./img/C as in Chick Hicks.png",
+                "./img/D as in Doc Hudson.png",
+                "./img/E as in Elvis.png",
+                "./img/F as in Finn McMissile.png",
+                "./img/G as in Guido.png",
+                "./img/H as in Holley Shiftwell.png",
+                "./img/I as in Ivan Mater.png",
+                "./img/J as in Jackson Storm.png",
+                "./img/K as in King.png",
+                "./img/L as in Luigi.png",
+                "./img/M as in Mater.png",
+                "./img/N as in Natalie Certain.png",
+                "./img/O as in Okuni.png",
+                "./img/P as in Piston Cup.png",
+                "./img/Q as in Queen.png",
+                "./img/R as in Red.png",
+                "./img/S as in Sheriff.png",
+                "./img/T as in Tractor.png",
+                "./img/U as in Uncle Topolino.png",
+                "./img/V as in V8 Cafe.png",
+                "./img/W as in Wingo.png",
+                "./img/X as in axlerod.png",
+                "./img/Y as in Yeti.png",
+                "./img/Z as in Zundapp.png"
+            ];
+
+            if (text.length === 1 && text >= 'A' && text <= 'Z') { // 1文字しか受け付けない
+                image.src = images[text.charCodeAt(0) - 65];
+                result.innerHTML = text + " for <strong>" + text + "</strong>";
+
+                // 入力された文字に応じて結果を表示
+                switch (text) {
+                    case "A":
+                        result.innerHTML = "A for <strong>Arvy Motorhome</strong>"
+                        image.src = images[0];
+                        break;
+                    case "B":
+                        result.innerHTML = "B for <strong>Brick Yardley</strong>"
+                        image.src = images[1];
+                        break;
+                    case "C":
+                        result.innerHTML = "C for <strong>Chick Hicks</strong>"
+                        image.src = images[2];
+                        break;
+                    case "D":
+                        result.innerHTML = "D for <strong>Doc Hudson</strong>"
+                        image.src = images[3];
+                        break;
+                    case "E":
+                        result.innerHTML = "E for <strong>Elvis</strong>"
+                        image.src = images[4];
+                        break;
+                    case "F":
+                        result.innerHTML = "F for <strong>Finn McMissile</strong>"
+                        image.src = images[5];
+                        break;
+                    case "G":
+                        result.innerHTML = "G for <strong>Guido</strong>"
+                        image.src = images[6];
+                        break;
+                    case "H":
+                        result.innerHTML = "H for <strong>Holley Shiftwell</strong>"
+                        image.src = images[7];
+                        break;
+                    case "I":
+                        result.innerHTML = "I for <strong>Ivan Mater</strong>"
+                        image.src = images[8];
+                        break;
+                    case "J":
+                        result.innerHTML = "J for <strong>Jackson Storm</strong>"
+                        image.src = images[9];
+                        break;
+                    case "K":
+                        result.innerHTML = "K for <strong>King</strong>"
+                        image.src = images[10];
+                        break;
+                    case "L":
+                        result.innerHTML = "L for <strong>Luigi</strong>"
+                        image.src = images[11];
+                        break;
+                    case "M":
+                        result.innerHTML = "M for <strong>Mater</strong>"
+                        image.src = images[12];
+                        break;
+                    case "N":
+                        result.innerHTML = "N for <strong>Natalie Certain</strong>"
+                        image.src = images[13];
+                        break;
+                    case "O":
+                        result.innerHTML = "O for <strong>Okuni</strong>"
+                        image.src = images[14];
+                        break;
+                    case "P":
+                        result.innerHTML = "P for <strong>Piston Cup</strong>"
+                        image.src = images[15];
+                        break;
+                    case "Q":
+                        result.innerHTML = "Q for <strong>Queen</strong>"
+                        image.src = images[16];
+                        break;
+                    case "R":
+                        result.innerHTML = "R for <strong>Red</strong>"
+                        image.src = images[17];
+                        break;
+                    case "S":
+                        result.innerHTML = "S for <strong>Sheriff</strong>"
+                        image.src = images[18];
+                        break;
+                    case "T":
+                        result.innerHTML = "T for <strong>Tractor</strong>"
+                        image.src = images[19];
+                        break;
+                    case "U":
+                        result.innerHTML = "U for <strong>Uncle Topolino</strong>"
+                        image.src = images[20];
+                        break;
+                    case "V":
+                        result.innerHTML = "V for <strong>V8 Cafe</strong>"
+                        image.src = images[21];
+                        break;
+                    case "W":
+                        result.innerHTML = "W for <strong>Wingo</strong>"
+                        image.src = images[22];
+                        break;
+                    case "X":
+                        result.innerHTML = "X for <strong>axlerod</strong>"
+                        image.src = images[23];
+                        break;
+                    case "Y":
+                        result.innerHTML = "Y for <strong>Yeti</strong>"
+                        image.src = images[24];
+                        break;
+                    case "Z":
+                        result.innerHTML = "Z for <strong>Zundapp</strong>"
+                        image.src = images[25];
+                        break;
+                    default:
+                        result.innerHTML = "A〜Zのアルファベットを入力してね！";
+                        image.src = "./img/_welcomeSign.png";
+                        break;
+                }
+            } else {
+                image.src = './img/_welcomeSign.png';
+                result.innerHTML = '1文字ずつ入力してね！';
+            }
+
+            // 既存のタイマーがある場合はクリア
+            if (clearTimer) {
+                clearTimeout(clearTimer);
+            }
+
+            // 3秒後に入力フィールドをクリア
+            clearTimer = setTimeout(() => {
+                inputField.value = '';
+                result.innerHTML = '';
+                image.src = './img/_welcomeSign.png';
+            }, 2000);
+
+            // タイプ音を再生
+            typeSound.currentTime = 0;
+            typeSound.play();
+        }
+
+        // イベントハンドラー内でフォーカスを設定し、その後inputイベントリスナーを追加
+        window.onload = function () {
+            const inputField = document.getElementById('txt');
+            inputField.focus();
+            inputField.addEventListener('input', result);
+        }
+
+        // Hover and click events for back-to-top
+        const backToTop = document.getElementById('back-to-top');
+        const hoverSound = new Audio('./sounds/select.mp3');
+        const clickSound = new Audio('./sounds/start.mp3');
+
+        backToTop.addEventListener('mouseover', () => {
+            hoverSound.play();
+        });
+
+        backToTop.addEventListener('click', (event) => {
+            event.preventDefault();
+            clickSound.play();
+            setTimeout(() => {
+                window.location.href = backToTop.href;
+            }, 5000);
+        });
+
+        // オーバーレイクリックイベント
+        const overlay = document.getElementById('overlay');
+        overlay.addEventListener('click', () => {
+            overlay.style.display = 'none';
+        });
+    </script>
+
+</body>
+
+</html>

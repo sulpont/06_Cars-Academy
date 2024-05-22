@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cars Academy｜Ranking（ランキング）</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            flex-direction: column;
+            align-items: center;
+            background-image: url(./img/wallpaper4.jpg);
+            background-size: cover;
+            background-color: rgba(255, 255, 255, 0.3);
+            background-blend-mode: lighten;
+            overflow: hidden;
+            min-height: 100vh;
+            margin: 0;
+            position: relative;
+        }
+
+        .title {
+            display: flex;
+            align-items: center;
+            color: whitesmoke;
+            margin-top: 2em;
+        }
+
+        .title img {
+            width: 40px;
+            height: 40px;
+            margin-right: 10px;
+        }
+
+        .close-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 24px;
+            color: whitesmoke;
+            cursor: pointer;
+            transition: color 0.3s;
+            margin-right: 18px;
+            margin-top: 10px;
+        }
+
+        .close-button:hover {
+            color: #ffcc00;
+        }
+
+        .ranking-container {
+            width: 80%;
+            max-width: 800px;
+            max-height: 300px;
+            background-color: whitesmoke;
+            padding: 2em;
+            border-radius: 0.8em;
+            margin: 2em auto;
+            text-align: center;
+            overflow-y: auto;
+            z-index: 1;
+        }
+
+        .ranking-list {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .ranking-list li {
+            padding: 0.5em;
+            border-bottom: 1px solid #ddd;
+            display: flex;
+            align-items: center;
+            width: 100%;
+        }
+
+        .ranking-list li:last-child {
+            border-bottom: none;
+        }
+
+        .ranking-item {
+            display: flex;
+            align-items: center;
+            width: 70px;
+        }
+
+        .rank-number {
+            display: inline-block;
+            width: 30px;
+            text-align: right;
+        }
+
+        .ranking-icon {
+            margin-right: 5px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .user-score {
+            flex-grow: 1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-left: 20px;
+            white-space: nowrap;
+        }
+
+        .user-score span {
+            flex: 1;
+            text-align: left;
+            margin-right: 15px;
+        }
+
+        #particles-js {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+
+        #canvas {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+
+        .footer {
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            text-align: center;
+            padding: 10px;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            font-family: Arial, sans-serif;
+            z-index: 10;
+        }
+
+        .footer p {
+            font-size: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 背景のパーティクルエフェクト -->
+    <div id="particles-js"></div>
+    <canvas id="canvas"></canvas>
+
+    <!-- タイトルと閉じるボタン -->
+    <div class="title">
+        <img src="./img/ranking.jpg" alt="Ranking">
+        <h1>ランキング</h1>
+    </div>
+
+    <div class="close-button" id="close-button">
+        <i class="fas fa-times"></i>
+    </div>
+
+    <!-- ランキングのコンテナ -->
+    <div class="ranking-container">
+        <ul id="ranking-list" class="ranking-list"></ul>
+    </div>
+
+    <!-- フッター -->
+    <div class="footer">
+        <p>©Disney/Pixar「カーズ／Cars」は米国ウォルト・ディズニー・カンパニー（The Walt Disney Company）の登録商標です。</p>
+        <p>©︎タカラトミー 「トミカ」は株式会社タカラトミーの登録商標です。</p>
+        <p>本アプリは、文化庁「改正著作権法第35条運用指針」に準拠し、非営利目的で設置された教育機関で行われる授業において、
+            その授業の過程で必要と認められる限度において利用に供することを目的として開発されました。</p>
+    </div>
+
+    <!-- パーティクルエフェクトのスクリプト -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js"></script>
+    <script src="https://code.createjs.com/1.0.0/createjs.min.js"></script>
+
+    <script>
+        // パーティクルの設定
+        particlesJS("particles-js", {
+            "particles": {
+                "number": {
+                    "value": 100,
+                    "density": {
+                        "enable": true,
+                        "value_area": 800
+                    }
+                },
+                "color": {
+                    "value": "#ff4500"
+                },
+                "shape": {
+                    "type": "circle",
+                    "stroke": {
+                        "width": 0,
+                        "color": "#ff4500"
+                    },
+                    "polygon": {
+                        "nb_sides": 5
+                    }
+                },
+                "opacity": {
+                    "value": 0.5,
+                    "random": false,
+                    "anim": {
+                        "enable": false,
+                        "speed": 1,
+                        "opacity_min": 0.1,
+                        "sync": false
+                    }
+                },
+                "size": {
+                    "value": 5,
+                    "random": true,
+                    "anim": {
+                        "enable": true,
+                        "speed": 3,
+                        "size_min": 0.1,
+                        "sync": false
+                    }
+                },
+                "line_linked": {
+                    "enable": false,
+                },
+                "move": {
+                    "enable": true,
+                    "speed": 5,
+                    "direction": "top-right",
+                    "random": false,
+                    "straight": false,
+                    "out_mode": "out",
+                    "bounce": false,
+                    "attract": {
+                        "enable": false,
+                        "rotateX": 600,
+                        "rotateY": 1200
+                    }
+                }
+            },
+            "interactivity": {
+                "detect_on": "canvas",
+                "events": {
+                    "onhover": {
+                        "enable": false,
+                    },
+                    "onclick": {
+                        "enable": false,
+                    },
+                    "resize": true
+                },
+            },
+            "retina_detect": true
+        });
+    </script>
+
+    <!-- FirebaseおよびFirestoreの設定とランキングデータの取得 -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-app.js";
+        import { getFirestore, collection, query, orderBy, getDocs } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-firestore.js";
+
+        // Firebaseの設定
+        const firebaseConfig = {
+            apiKey: "AIzaSyB-J6Bjoju4NeRAz6QtMP-9CWRTMZcSJUg",
+            authDomain: "cars-academy.firebaseapp.com",
+            projectId: "cars-academy",
+            storageBucket: "cars-academy.appspot.com",
+            messagingSenderId: "715129685567",
+            appId: "1:715129685567:web:3efdbddbf3533fbdba1a8a"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // ランキングデータを取得する
+        const fetchRanking = async () => {
+            // console.log("ランキングデータを取得中...");
+            const scoresRef = collection(db, 'scores');
+            const q = query(scoresRef, orderBy('totalTime', 'asc'), orderBy('totalMistakes', 'asc'));
+            try {
+                const querySnapshot = await getDocs(q);
+                const rankingList = document.getElementById("ranking-list");
+                let rank = 1;
+                const now = new Date();
+
+                // console.log("取得したランキング数: ", querySnapshot.size);
+
+                querySnapshot.forEach((doc) => {
+                    const score = doc.data();
+                    // console.log("取得したスコア: ", score);
+                    const li = document.createElement("li");
+
+                    let icon = '';
+                    if (rank === 1) {
+                        icon = '<i class="fas fa-crown" style="color: gold;"></i>';
+                    } else if (rank === 2) {
+                        icon = '<i class="fas fa-crown" style="color: silver;"></i>';
+                    } else if (rank === 3) {
+                        icon = '<i class="fas fa-crown" style="color: bronze;"></i>';
+                    }
+
+                    const timestamp = score.timestamp ? score.timestamp.toDate().toLocaleString() : 'N/A';
+                    const newTag = score.timestamp && (now - score.timestamp.toDate()) < 5 * 60 * 1000 ? '<span style="color: red; margin-left: 5px;">New!</span>' : '';
+
+                    li.innerHTML = `
+                        <div class="ranking-item">
+                            <span class="ranking-icon">${icon}</span>
+                            <span class="rank-number">${rank}</span>
+                        </div>
+                        <div class="user-score">
+                            <span>${score.userId}</span>
+                            <span>Total Time: ${score.totalTime.toFixed(2)}s</span>
+                            <span>Total Mistakes: ${score.totalMistakes}</span>
+                            <span>${timestamp}${newTag}</span>
+                        </div>
+                    `;
+                    rankingList.appendChild(li);
+                    rank += 1;
+                });
+            } catch (error) {
+                console.error("ランキングの取得中にエラーが発生しました:", error);
+            }
+        };
+
+        // ページ読み込み時にランキングを取得
+        document.addEventListener('DOMContentLoaded', fetchRanking);
+
+        // 閉じるボタンのクリックイベント
+        const closeButton = document.getElementById("close-button");
+        closeButton.addEventListener("click", () => {
+            window.close();
+        });
+    </script>
+
+</body>
+
+</html>

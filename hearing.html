@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cars Academy｜Hearing Mode（ヒアリングモード）</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            flex-direction: column;
+            align-items: center;
+            background-image: url(./img/wallpaper2.jpg);
+            background-size: cover;
+            background-color: rgba(255, 255, 255, 0.4);
+            background-blend-mode: lighten;
+            overflow: hidden;
+            min-height: 100vh;
+            margin: 0;
+            position: relative;
+            margin-top: -40px;
+        }
+
+        #particles-js {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        #canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .alphabet-container {
+            display: grid;
+            justify-content: center;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 10px;
+            margin: 10px;
+            font-size: 80px;
+            color: whitesmoke;
+            z-index: 3;
+        }
+
+        .alphabet {
+            cursor: pointer;
+            padding: 34px 34px;
+            text-align: center;
+            line-height: 2rem;
+            width: 2rem;
+            height: 2rem;
+            transition: transform 0.3s, color 0.3s;
+        }
+
+        .alphabet:hover {
+            transform: scale(1.5);
+            color: #ffcc00;
+        }
+
+        .alphabet.played {
+            color: gray;
+            pointer-events: none;
+        }
+
+        .back-to-top {
+            position: fixed;
+            top: 20px;
+            right: 30px;
+            text-decoration: none;
+            color: whitesmoke;
+            font-size: 20px;
+            z-index: 4;
+            transition: transform 0.3s, color 0.3s;
+        }
+
+        .back-to-top:hover {
+            color: #ffcc00;
+            transform: rotate(360deg);
+        }
+
+        .footer {
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            text-align: center;
+            padding: 10px;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            font-family: Arial, sans-serif;
+            z-index: 4;
+        }
+
+        .footer p {
+            font-size: 10px;
+        }
+
+        .title {
+            display: flex;
+            align-items: center;
+            color: whitesmoke;
+            z-index: 4;
+        }
+
+        .title img {
+            width: 40px;
+            height: 40px;
+            margin-right: 10px;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 24px;
+            z-index: 5;
+            animation: pulse 2s infinite ease-in-out;
+            pointer-events: auto;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            z-index: 6;
+        }
+
+        .modal.active {
+            display: block;
+        }
+
+        .modal p {
+            margin-bottom: 20px;
+            font-size: 18px;
+            color: black;
+        }
+
+        .modal button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #ff4500;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .modal button:hover {
+            background-color: #ffcc00;
+        }
+
+        .reset-button {
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #ff4500;
+            color: whitesmoke;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+            z-index: 4;
+        }
+
+        .reset-button:hover {
+            background-color: #ffcc00;
+        }
+
+        .counter {
+            font-size: 24px;
+            color: whitesmoke;
+            margin-left: 20px;
+            z-index: 4;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="particles-js"></div>
+    <canvas id="canvas"></canvas>
+
+    <a href="./top.html" class="back-to-top" id="back-to-top">
+        <i class="fas fa-arrow-circle-up"></i> Back To Top
+    </a>
+
+    <div class="title" id="hearing-mode">
+        <img src="./img/hearing-icon.png" alt="Hearing Mode">
+        <h1>ヒアリングモード</h1>
+    </div>
+
+    <div class="reset">
+        <button class="reset-button" id="reset-button">リセット</button>
+        <span class="counter" id="counter">0 / 26</span>
+    </div>
+
+    <div class="alphabet-container">
+        <!-- JavaScriptでアルファベットを動的に追加します -->
+    </div>
+
+    <div class="footer">
+        <p>©Disney/Pixar「カーズ／Cars」は米国ウォルト・ディズニー・カンパニー（The Walt Disney Company）の登録商標です。</p>
+        <p>©︎タカラトミー 「トミカ」は株式会社タカラトミーの登録商標です。</p>
+        <p>本アプリは、文化庁「改正著作権法第35条運用指針」に準拠し、非営利目的で設置された教育機関で行われる授業において、
+            その授業の過程で必要と認められる限度において利用に供することを目的として開発されました。</p>
+    </div>
+
+    <div class="overlay" id="overlay">
+        Click to start（ゲームを始める）
+    </div>
+
+    <div class="modal" id="congratulations-modal">
+        <p>おめでとう！</p>
+        <button id="close-modal">閉じる</button>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js"></script>
+    <script src="https://code.createjs.com/1.0.0/createjs.min.js"></script>
+
+    <script>
+
+        // Particles.jsの設定
+        particlesJS("particles-js", {
+            "particles": {
+                "number": {
+                    "value": 100,
+                    "density": {
+                        "enable": true,
+                        "value_area": 800
+                    }
+                },
+                "color": {
+                    "value": "#ff4500"
+                },
+                "shape": {
+                    "type": "circle",
+                    "stroke": {
+                        "width": 0,
+                        "color": "#ff4500"
+                    },
+                    "polygon": {
+                        "nb_sides": 5
+                    }
+                },
+                "opacity": {
+                    "value": 0.5,
+                    "random": false,
+                    "anim": {
+                        "enable": false,
+                        "speed": 1,
+                        "opacity_min": 0.1,
+                        "sync": false
+                    }
+                },
+                "size": {
+                    "value": 5,
+                    "random": true,
+                    "anim": {
+                        "enable": true,
+                        "speed": 3,
+                        "size_min": 0.1,
+                        "sync": false
+                    }
+                },
+                "line_linked": {
+                    "enable": false,
+                },
+                "move": {
+                    "enable": true,
+                    "speed": 5,
+                    "direction": "top-right",
+                    "random": false,
+                    "straight": false,
+                    "out_mode": "out",
+                    "bounce": false,
+                    "attract": {
+                        "enable": false,
+                        "rotateX": 600,
+                        "rotateY": 1200
+                    }
+                }
+            },
+            "interactivity": {
+                "detect_on": "canvas",
+                "events": {
+                    "onhover": {
+                        "enable": false,
+                    },
+                    "onclick": {
+                        "enable": false,
+                    },
+                    "resize": true
+                },
+            },
+            "retina_detect": true
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const alphabetContainer = document.querySelector('.alphabet-container');
+            const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+            const randomLetters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+            const playedLetters = new Set(JSON.parse(localStorage.getItem('playedLetters')) || []);
+            const modal = document.getElementById('congratulations-modal');
+            const closeModalButton = document.getElementById('close-modal');
+            const counter = document.getElementById('counter');
+
+            // カウンター表示を更新する
+            const updateCounter = () => {
+                counter.textContent = `${playedLetters.size} / 26`;
+            };
+
+            // played lettersをlocalStorageに保存するためのヘルパー関数
+            const savePlayedLetters = () => {
+                localStorage.setItem('playedLetters', JSON.stringify([...playedLetters]));
+            };
+
+            // すべての文字が再生されたかどうかをチェックし、完了している場合はモーダルを表示
+            const checkCompletion = () => {
+                if (playedLetters.size === letters.length) {
+                    modal.classList.add('active');
+                    const audio = new Audio('./sounds/fanfare.mp3');
+                    audio.play();
+                }
+            };
+
+            // ゲームをリセットする
+            const resetGame = () => {
+                const resetAudio = new Audio('./sounds/reset.mp3');
+                resetAudio.play();
+                resetAudio.onended = () => {
+                    localStorage.removeItem('playedLetters');
+                    document.querySelectorAll('.alphabet').forEach(el => {
+                        el.classList.remove('played');
+                    });
+                    playedLetters.clear();
+                    updateCounter();
+                };
+            };
+
+            letters.forEach(letter => {
+                const letterElement = document.createElement('div');
+                letterElement.classList.add('alphabet');
+                letterElement.textContent = letter;
+
+                // 文字が再生されたかどうかをチェックし、'played'クラスを追加
+                if (playedLetters.has(letter)) {
+                    letterElement.classList.add('played');
+                }
+
+                // ホバー時にオーディオを再生
+                letterElement.addEventListener('mouseover', () => {
+                    const audio = new Audio(`./sounds/${letter}.mp3`);
+                    audio.play();
+                });
+
+                // クリック時にlocalStorageに保存
+                letterElement.addEventListener('click', () => {
+                    if (!playedLetters.has(letter)) {
+                        const audio = new Audio('./sounds/coin.mp3');
+                        audio.play();
+                        playedLetters.add(letter);
+                        savePlayedLetters();
+                        letterElement.classList.add('played');
+                        updateCounter();
+                        checkCompletion();
+                    }
+                });
+
+                alphabetContainer.appendChild(letterElement);
+            });
+
+            // '?'要素を2つ追加
+            for (let i = 0; i < 2; i++) {
+                const questionMarkElement = document.createElement('div');
+                questionMarkElement.classList.add('alphabet');
+                questionMarkElement.textContent = '？';
+                questionMarkElement.addEventListener('mouseover', () => {
+                    const randomLetter = randomLetters[Math.floor(Math.random() * randomLetters.length)];
+                    questionMarkElement.textContent = randomLetter;
+                    const audio = new Audio(`./sounds/${randomLetter}.mp3`);
+                    audio.play();
+                    setTimeout(() => {
+                        questionMarkElement.textContent = '？';
+                    }, 1000);
+                });
+                alphabetContainer.appendChild(questionMarkElement);
+            }
+
+            // Back to topのホバー音
+            const backToTop = document.getElementById('back-to-top');
+            backToTop.addEventListener('mouseover', () => {
+                const audio = new Audio('./sounds/select.mp3');
+                audio.play();
+            });
+
+            // Back to topのクリック音
+            backToTop.addEventListener('click', (e) => {
+                e.preventDefault(); // デフォルトのアクションを防ぐ
+                const audio = new Audio('./sounds/start.mp3');
+                audio.play();
+                audio.onended = () => {
+                    window.location.href = 'top.html'; // サウンド再生後にリダイレクト
+                };
+            });
+
+            // オーバーレイクリックイベント
+            const overlay = document.getElementById('overlay');
+            overlay.addEventListener('click', () => {
+                overlay.style.display = 'none';
+            });
+
+            // モーダルを閉じてゲームをリセット
+            closeModalButton.addEventListener('click', () => {
+                modal.classList.remove('active');
+                resetGame();
+            });
+
+            // リセットボタンクリックイベント
+            const resetButton = document.getElementById('reset-button');
+            resetButton.addEventListener('click', resetGame);
+
+            // 初期カウンター更新
+            updateCounter();
+        });
+    </script>
+</body>
+
+</html>

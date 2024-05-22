@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cars Academy｜Top（トップ画面）</title>
+
+    <!-- Font Awesomeの読み込み -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+    <style>
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: #000;
+            color: black;
+            font-family: Arial, sans-serif;
+            background-image: url(./img/wallpaper.jpg);
+            background-size: cover;
+            background-color: rgba(255, 255, 255, 0.5);
+            background-blend-mode: lighten;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #particles-js {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        #canvas {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+        }
+
+        .footer {
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            text-align: center;
+            padding: 10px;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            font-family: Arial, sans-serif;
+        }
+
+        .footer p {
+            font-size: 10px;
+        }
+
+        #content {
+            position: relative;
+            z-index: 3;
+            text-align: center;
+            padding-top: 100px;
+            margin-top: 50px;
+        }
+
+        .mode-icons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 50px;
+            font-size: 20px;
+            padding: 0 60px;
+        }
+
+        .icon {
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .icon:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.7);
+        }
+
+        .icon img {
+            width: 60px;
+            transition: transform 0.3s ease;
+        }
+
+        .icon:hover img {
+            transform: rotate(10deg);
+            opacity: 0.7;
+        }
+
+        .icon p {
+            margin-top: 10px;
+            font-size: 1.2em;
+            transition: color 0.3s ease;
+        }
+
+        .icon:hover p {
+            color: #ffcc00;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.1);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 24px;
+            z-index: 1000;
+            animation: pulse 2s infinite ease-in-out;
+        }
+
+        h1 {
+            font-size: 60px;
+        }
+
+        /* ミュートボタンのスタイリング */
+        .mute-button {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 24px;
+            color: white;
+            background: rgba(0, 0, 0, 0.5);
+            border: none;
+            cursor: pointer;
+            z-index: 1001;
+            padding: 10px;
+            border-radius: 50%;
+            transition: background 0.3s ease;
+        }
+
+        .mute-button:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+
+<body>
+    <div id="particles-js"></div>
+    <canvas id="canvas"></canvas>
+    <div id="content">
+        <h1>Cars Academy</h1>
+        <div class="mode-icons">
+            <a href="./hearing.html">
+                <div class="icon" id="hearing-mode">
+                    <img src="./img/hearing-icon.png" alt="Hearing Mode">
+                    <p>ヒアリングモード</p>
+                </div>
+            </a>
+            <a href="./typing.html">
+                <div class="icon" id="typing-mode">
+                    <img src="./img/typing-icon.png" alt="Typing Mode">
+                    <p>タイピングモード</p>
+                </div>
+            </a>
+            <a href="./puzzle.html">
+                <div class="icon" id="puzzle-mode">
+                    <img src="./img/puzzle-icon.jpg" alt="Puzzle Mode">
+                    <p>パズルモード</p>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>©Disney/Pixar「カーズ／Cars」は米国ウォルト・ディズニー・カンパニー（The Walt Disney Company）の登録商標です。</p>
+        <p>©︎タカラトミー 「トミカ」は株式会社タカラトミーの登録商標です。</p>
+        <p>本アプリは、文化庁「改正著作権法第35条運用指針」に準拠し、非営利目的で設置された教育機関で行われる授業において、
+            その授業の過程で必要と認められる限度において利用に供することを目的として開発されました。</p>
+    </div>
+
+    <div class="overlay" id="overlay">
+        Click to start（ゲームを始める）
+    </div>
+
+    <button class="mute-button" id="mute-button">
+        <i class="fas fa-volume-mute"></i>
+    </button>
+
+    <audio id="bgm" loop>
+        <source src="./sounds/bgm.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="select-sound">
+        <source src="./sounds/select.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="start-sound">
+        <source src="./sounds/start.mp3" type="audio/mpeg">
+    </audio>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js"></script>
+    <script src="https://code.createjs.com/1.0.0/createjs.min.js"></script>
+
+    <script>
+        // Particles.jsの設定
+        particlesJS("particles-js", {
+            "particles": {
+                "number": {
+                    "value": 100,
+                    "density": {
+                        "enable": true,
+                        "value_area": 800
+                    }
+                },
+                "color": {
+                    "value": "#ff4500"
+                },
+                "shape": {
+                    "type": "circle",
+                    "stroke": {
+                        "width": 0,
+                        "color": "#ff4500"
+                    },
+                    "polygon": {
+                        "nb_sides": 5
+                    }
+                },
+                "opacity": {
+                    "value": 0.5,
+                    "random": false,
+                    "anim": {
+                        "enable": false,
+                        "speed": 1,
+                        "opacity_min": 0.1,
+                        "sync": false
+                    }
+                },
+                "size": {
+                    "value": 5,
+                    "random": true,
+                    "anim": {
+                        "enable": true,
+                        "speed": 3,
+                        "size_min": 0.1,
+                        "sync": false
+                    }
+                },
+                "line_linked": {
+                    "enable": false,
+                },
+                "move": {
+                    "enable": true,
+                    "speed": 5,
+                    "direction": "top-right",
+                    "random": false,
+                    "straight": false,
+                    "out_mode": "out",
+                    "bounce": false,
+                    "attract": {
+                        "enable": false,
+                        "rotateX": 600,
+                        "rotateY": 1200
+                    }
+                }
+            },
+            "interactivity": {
+                "detect_on": "canvas",
+                "events": {
+                    "onhover": {
+                        "enable": false,
+                    },
+                    "onclick": {
+                        "enable": false,
+                    },
+                    "resize": true
+                },
+            },
+            "retina_detect": true
+        });
+
+        // オーディオ要素
+        const bgm = document.getElementById('bgm');
+        const selectSound = document.getElementById('select-sound');
+        const startSound = document.getElementById('start-sound');
+        const muteButton = document.getElementById('mute-button');
+        let isMuted = JSON.parse(localStorage.getItem('isMuted')) || false;
+
+        // ミュート状態をLocalStorageから復元
+        function setMuteState(muted) {
+            bgm.muted = muted;
+            startSound.muted = muted;
+            muteButton.innerHTML = muted ? '<i class="fas fa-volume-up"></i>' : '<i class="fas fa-volume-mute"></i>';
+        }
+
+        // ページ読み込み時にミュート状態を設定
+        setMuteState(isMuted);
+
+        // ユーザーの操作後にオーディオ再生を有効にする関数
+        function enableAudio() {
+            const audioElements = [bgm, selectSound, startSound];
+            audioElements.forEach(audio => {
+                const playPromise = audio.play();
+                if (playPromise !== undefined) {
+                    playPromise.then(() => {
+                        audio.pause();
+                        audio.currentTime = 0;
+                    }).catch(error => {
+                        console.error('オーディオ再生に失敗しました:', error);
+                    });
+                }
+            });
+            document.removeEventListener('click', enableAudio);
+        }
+
+        document.addEventListener('click', enableAudio);
+
+        // BGMの制御とオーバーレイクリック時の選択音
+        const overlay = document.getElementById('overlay');
+
+        overlay.addEventListener('click', function () {
+            selectSound.currentTime = 0;
+            selectSound.play().then(() => {
+                return bgm.play();
+            }).then(() => {
+                overlay.style.display = 'none';
+            }).catch(error => {
+                console.error('オーディオ再生に失敗しました:', error);
+            });
+        });
+
+        // オーバーレイホバー時の音
+        overlay.addEventListener('mouseenter', () => {
+            selectSound.currentTime = 0; // サウンドを再開始する
+            selectSound.play().catch(error => {
+                console.error('選択サウンドの再生に失敗しました:', error);
+            });
+        });
+
+        // モードアイコンのクリックイベント
+        const icons = document.querySelectorAll('.icon');
+
+        icons.forEach(icon => {
+            icon.addEventListener("click", () => {
+                startSound.currentTime = 0;
+                startSound.play().catch(error => {
+                    console.error('スタートサウンドの再生に失敗しました:', error);
+                });
+            });
+        });
+
+        // アイコンホバー時の音
+        icons.forEach(icon => {
+            icon.addEventListener("mouseenter", () => {
+                selectSound.currentTime = 0; // サウンドを再開始する
+                selectSound.play().catch(error => {
+                    console.error('選択サウンドの再生に失敗しました:', error);
+                });
+            });
+        });
+
+        // ミュートボタンの機能
+        muteButton.addEventListener('click', () => {
+            isMuted = !isMuted;
+            localStorage.setItem('isMuted', JSON.stringify(isMuted));
+            setMuteState(isMuted);
+        });
+    </script>
+
+</body>
+
+</html>
